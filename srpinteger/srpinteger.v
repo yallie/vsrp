@@ -46,7 +46,7 @@ pub fn parse(hex string) bignum.Number {
 
 		part := h[i..end]
 		parsed := strconv.parse_uint(part, 16, 64)
-		result = result.lshift(part_size * hex_bits) + bignum.from_u64(parsed)
+		result = result.lshift(part.len * hex_bits) + bignum.from_u64(parsed)
 	}
 
 	return result
@@ -100,6 +100,56 @@ pub fn (si SrpInteger) str() string {
 
 pub fn (a SrpInteger) eq(b SrpInteger) bool {
 	return bignum.cmp(a.value, b.value) == 0
+}
+
+fn max(a, b int) int {
+	return if a > b {
+		a
+	} else {
+		b
+	}
+}
+
+pub fn (a SrpInteger) + (b SrpInteger) SrpInteger {
+	return SrpInteger {
+		value: a.value + b.value
+		hex_length: max(a.hex_length, b.hex_length)
+	}
+}
+
+pub fn (a SrpInteger) - (b SrpInteger) SrpInteger {
+	return SrpInteger {
+		value: a.value - b.value
+		hex_length: max(a.hex_length, b.hex_length)
+	}
+}
+
+pub fn (a SrpInteger) * (b SrpInteger) SrpInteger {
+	return SrpInteger {
+		value: a.value * b.value
+		hex_length: max(a.hex_length, b.hex_length)
+	}
+}
+
+pub fn (a SrpInteger) / (b SrpInteger) SrpInteger {
+	return SrpInteger {
+		value: a.value / b.value
+		hex_length: max(a.hex_length, b.hex_length)
+	}
+}
+
+pub fn (a SrpInteger) % (b SrpInteger) SrpInteger {
+	return SrpInteger {
+		value: a.value % b.value
+		hex_length: max(a.hex_length, b.hex_length)
+	}
+}
+
+pub fn (a SrpInteger) b_xor (b SrpInteger) SrpInteger {
+	return SrpInteger {
+		value: bignum.b_xor(a.value, b.value)
+		hex_length: max(a.hex_length, b.hex_length)
+	}
 }
 
 pub fn range<T>(start, end T) []T {
